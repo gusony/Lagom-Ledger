@@ -1,4 +1,6 @@
-# 記帳 App (Accounting)
+# Lagom Ledger
+
+記帳 App
 
 個人使用的記帳 iPhone App，使用 SwiftUI 開發。
 
