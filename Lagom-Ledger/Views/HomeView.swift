@@ -80,9 +80,8 @@ struct HomeView: View {
                     .background(Color(.separator))
                 
                 // 可捲動區域：日曆 + 摘要 + 交易列表
-                ScrollView {
-                    VStack(spacing: 0) {
-                        // 年/月/日 選取器內容
+                List {
+                    Section {
                         VStack(spacing: 0) {
                             switch selectedPeriod {
                             case .year:
@@ -95,32 +94,37 @@ struct HomeView: View {
                         }
                         .padding(16)
                         .frame(maxWidth: .infinity)
-                        .background(Color(.secondarySystemGroupedBackground))
+                        .listRowBackground(Color(.secondarySystemGroupedBackground))
+                        .listRowInsets(EdgeInsets())
                         
                         summaryCard
-                        
-                        Divider()
-                            .background(Color(.separator))
-                        
-                        // 交易列表（長按可刪除）
-                        LazyVStack(spacing: 0) {
-                            ForEach(filteredTransactions) { transaction in
+                            .listRowBackground(Color(.systemBackground))
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
+                    }
+                    .listRowSeparator(.hidden)
+                    
+                    Section {
+                        ForEach(filteredTransactions) { transaction in
+                            NavigationLink {
+                                TransactionDetailView(transaction: transaction)
+                            } label: {
                                 TransactionRowView(transaction: transaction)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .background(Color(.systemBackground))
-                                    .contentShape(Rectangle())
-                                    .contextMenu {
-                                        Button("刪除", role: .destructive) {
-                                            store.delete(transaction)
-                                        }
-                                    }
+                                    .padding(.vertical, 4)
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    store.delete(transaction)
+                                } label: {
+                                    Label("刪除", systemImage: "trash")
+                                }
                             }
                         }
-                        .padding(.bottom, 24)
                     }
+                    .listRowSeparator(.visible)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color(.systemGroupedBackground))
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -224,13 +228,6 @@ struct HomeView: View {
         }
         .padding()
         .background(Color(.systemBackground))
-    }
-    
-    private func deleteTransactions(at offsets: IndexSet) {
-        let toDelete = offsets.map { filteredTransactions[$0] }
-        for transaction in toDelete {
-            store.delete(transaction)
-        }
     }
 }
 

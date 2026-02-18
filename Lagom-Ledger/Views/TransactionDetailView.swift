@@ -1,26 +1,26 @@
 //
-//  AddTransactionView.swift
+//  TransactionDetailView.swift
 //  Lagom Ledger
 //
-//  新增收入/支出
+//  檢視與編輯交易明細
 //
 
 import SwiftUI
 
-struct AddTransactionView: View {
+struct TransactionDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var store = TransactionStore.shared
     @StateObject private var ledgerStore = LedgerStore.shared
-    let type: TransactionType
-    var isEmbeddedInTab: Bool = false
+    
+    let transaction: Transaction
     
     @State private var selectedType: TransactionType
-    @State private var selectedCategory: String = ""
+    @State private var selectedCategory: String
     @State private var selectedLedgerId: UUID?
-    @State private var amountText: String = ""
-    @State private var nameText: String = ""
-    @State private var invoiceNumberText: String = ""
-    @State private var selectedDate = Date()
+    @State private var amountText: String
+    @State private var nameText: String
+    @State private var invoiceNumberText: String
+    @State private var selectedDate: Date
     @State private var selectedImage: UIImage?
     @State private var showImagePicker = false
     @State private var showCamera = false
@@ -36,14 +36,31 @@ struct AddTransactionView: View {
             : IncomeCategory.allCases.map(\.rawValue)
     }
     
-    init(type: TransactionType = .expense, isEmbeddedInTab: Bool = false) {
-        self.type = type
-        self.isEmbeddedInTab = isEmbeddedInTab
-        _selectedType = State(initialValue: type)
+    init(transaction: Transaction) {
+        self.transaction = transaction
+        _selectedType = State(initialValue: transaction.type)
+        _selectedCategory = State(initialValue: transaction.category)
+        _selectedLedgerId = State(initialValue: transaction.ledgerId)
+        _amountText = State(initialValue: String(format: "%.0f", transaction.amount))
+        _nameText = State(initialValue: transaction.name ?? "")
+        _invoiceNumberText = State(initialValue: transaction.invoiceNumber ?? "")
+        _selectedDate = State(initialValue: transaction.date)
+        _selectedImage = State(initialValue: transaction.imageData.flatMap { UIImage(data: $0) })
     }
     
     private var isValid: Bool {
         selectedLedgerId != nil && !selectedCategory.isEmpty && (Double(amountText) ?? 0) > 0
+    }
+    
+    private var hasChanges: Bool {
+        selectedType != transaction.type ||
+        selectedCategory != transaction.category ||
+        selectedLedgerId != transaction.ledgerId ||
+        (Double(amountText) ?? 0) != transaction.amount ||
+        nameText != (transaction.name ?? "") ||
+        invoiceNumberText != (transaction.invoiceNumber ?? "") ||
+        !Calendar.current.isDate(selectedDate, inSameDayAs: transaction.date) ||
+        selectedImage?.jpegData(compressionQuality: 0.7) != transaction.imageData
     }
     
     var body: some View {
@@ -137,32 +154,15 @@ struct AddTransactionView: View {
                     }
                 }
             }
-            .navigationTitle("新增記帳")
+            .navigationTitle("明細")
             .navigationBarTitleDisplayMode(.inline)
-            .scrollDismissesKeyboard(.interactively)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-            }
             .toolbar {
-                if !isEmbeddedInTab {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("取消") { dismiss() }
-                    }
-                } else {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("清除") { resetForm() }
-                    }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("關閉") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("儲存") { save() }
-                        .disabled(!isValid)
-                }
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("完成") {
-                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                    }
+                        .disabled(!isValid || !hasChanges)
                 }
             }
             .alert("錯誤", isPresented: $showError) {
@@ -189,17 +189,10 @@ struct AddTransactionView: View {
                 }
             }
         }
-        .onAppear {
-            if selectedCategory.isEmpty {
+        .onChange(of: selectedType) { _, _ in
+            if !categories.contains(selectedCategory) {
                 selectedCategory = categories.first ?? ""
             }
-            // 若選了特定記帳本則帶入，若為全部則留空
-            if selectedLedgerId == nil && !ledgerStore.isShowingAll, let id = ledgerStore.selectedLedgerId {
-                selectedLedgerId = id
-            }
-        }
-        .onChange(of: selectedType) { _, _ in
-            selectedCategory = categories.first ?? ""
         }
     }
     
@@ -214,85 +207,35 @@ struct AddTransactionView: View {
             showError = true
             return
         }
-        
-        let imageData = selectedImage?.jpegData(compressionQuality: 0.7)
-        
         guard let ledgerId = selectedLedgerId else {
             errorMessage = "請選擇記帳本"
             showError = true
             return
         }
         
-        let transaction = Transaction(
-            type: selectedType,
-            category: selectedCategory,
-            amount: amount,
-            name: nameText.isEmpty ? nil : nameText,
-            invoiceNumber: invoiceNumberText.isEmpty ? nil : invoiceNumberText,
-            imageData: imageData,
-            date: selectedDate,
-            ledgerId: ledgerId
-        )
+        let imageData = selectedImage?.jpegData(compressionQuality: 0.7)
         
-        store.add(transaction)
-        if isEmbeddedInTab {
-            resetForm()
-        } else {
-            dismiss()
-        }
-    }
-    
-    private func resetForm() {
-        amountText = ""
-        nameText = ""
-        invoiceNumberText = ""
-        selectedDate = Date()
-        selectedImage = nil
-        selectedCategory = categories.first ?? ""
-        // 若選了特定記帳本則帶入，若為全部則清空
-        selectedLedgerId = ledgerStore.isShowingAll ? nil : ledgerStore.selectedLedgerId
-    }
-}
-
-// MARK: - Image Picker
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    let sourceType: UIImagePickerController.SourceType
-    @Environment(\.dismiss) private var dismiss
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = sourceType
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let parent: ImagePicker
+        var updated = transaction
+        updated.type = selectedType
+        updated.category = selectedCategory
+        updated.amount = amount
+        updated.name = nameText.isEmpty ? nil : nameText
+        updated.invoiceNumber = invoiceNumberText.isEmpty ? nil : invoiceNumberText
+        updated.imageData = imageData
+        updated.date = selectedDate
+        updated.ledgerId = ledgerId
         
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let uiImage = info[.originalImage] as? UIImage {
-                parent.image = uiImage
-            }
-            parent.dismiss()
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            parent.dismiss()
-        }
+        store.update(updated)
+        dismiss()
     }
 }
 
 #Preview {
-    AddTransactionView(type: .expense)
+    TransactionDetailView(transaction: Transaction(
+        type: .expense,
+        category: ExpenseCategory.food.rawValue,
+        amount: 150,
+        name: "午餐",
+        date: Date()
+    ))
 }

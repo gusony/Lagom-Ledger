@@ -19,6 +19,9 @@ struct SettingsView: View {
     @State private var showExportSheet = false
     @State private var showImportPicker = false
     @State private var exportDocument: CSVExportDocument?
+    @State private var isLotteryChecking = false
+    @State private var showLotteryResult = false
+    @State private var lotteryResultMessage = ""
     
     var body: some View {
         NavigationStack {
@@ -34,6 +37,24 @@ struct SettingsView: View {
                     Text("記帳本")
                 } footer: {
                     Text("新增、刪除記帳本。刪除會一併刪除該記帳本內的所有交易。")
+                }
+                
+                // 對獎
+                Section {
+                    Button {
+                        runLotteryCheck()
+                    } label: {
+                        Label("對獎", systemImage: "gift")
+                        if isLotteryChecking {
+                            Spacer()
+                            ProgressView()
+                        }
+                    }
+                    .disabled(isLotteryChecking)
+                } header: {
+                    Text("對獎")
+                } footer: {
+                    Text("比對最近六個月內有發票號碼的紀錄與最近三期開獎號碼。")
                 }
                 
                 // 資料匯出/匯入
@@ -58,7 +79,7 @@ struct SettingsView: View {
                 // iCloud 備份
                 Section {
                     Toggle("iCloud 備份", isOn: $settingsStore.iCloudBackupEnabled)
-                        .onChange(of: settingsStore.iCloudBackupEnabled) { newValue in
+                        .onChange(of: settingsStore.iCloudBackupEnabled) { _, newValue in
                             if newValue { backupToiCloud() }
                         }
                     
@@ -110,6 +131,11 @@ struct SettingsView: View {
                 Button("確定", role: .cancel) { }
             } message: {
                 Text(backupMessage)
+            }
+            .alert("對獎結果", isPresented: $showLotteryResult) {
+                Button("確定", role: .cancel) { }
+            } message: {
+                Text(lotteryResultMessage)
             }
             .confirmationDialog("清除所有資料", isPresented: $showClearConfirm, titleVisibility: .visible) {
                 Button("清除", role: .destructive) {
@@ -230,6 +256,25 @@ struct SettingsView: View {
             settingsStore.iCloudBackupEnabled = false
         }
         showBackupAlert = true
+    }
+    
+    private func runLotteryCheck() {
+        isLotteryChecking = true
+        Task { @MainActor in
+            if let summary = await LotteryChecker.shared.runCheck(transactions: transactionStore.transactions) {
+                LotteryChecker.shared.markChecked()
+                if summary.wins.isEmpty {
+                    lotteryResultMessage = "本次未中獎。已比對最近六個月內有發票號碼的紀錄。"
+                } else {
+                    let msg = summary.byPeriod.map { "\($0.key)：\($0.value.count) 張，共 $\($0.value.amount)" }.joined(separator: "\n")
+                    lotteryResultMessage = "恭喜中獎！\n\n\(msg)\n\n總計：\(summary.wins.count) 張，$\(summary.totalAmount)"
+                }
+            } else {
+                lotteryResultMessage = "對獎失敗，請檢查網路連線後重試。"
+            }
+            isLotteryChecking = false
+            showLotteryResult = true
+        }
     }
 }
 

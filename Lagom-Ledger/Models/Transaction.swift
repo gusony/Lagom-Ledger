@@ -36,8 +36,36 @@ enum IncomeCategory: String, Codable, CaseIterable {
     case other = "其他"
 }
 
+// MARK: - 類別圖示
+enum CategoryIcon {
+    private static let expenseIcons: [String: String] = [
+        ExpenseCategory.food.rawValue: "fork.knife",
+        ExpenseCategory.transport.rawValue: "car.fill",
+        ExpenseCategory.entertainment.rawValue: "gamecontroller.fill",
+        ExpenseCategory.shopping.rawValue: "bag.fill",
+        ExpenseCategory.housing.rawValue: "house.fill",
+        ExpenseCategory.medical.rawValue: "cross.case.fill",
+        ExpenseCategory.education.rawValue: "book.fill",
+        ExpenseCategory.other.rawValue: "ellipsis.circle.fill",
+    ]
+    private static let incomeIcons: [String: String] = [
+        IncomeCategory.salary.rawValue: "banknote.fill",
+        IncomeCategory.dividend.rawValue: "chart.line.uptrend.xyaxis",
+        IncomeCategory.capitalGain.rawValue: "dollarsign.circle.fill",
+        IncomeCategory.bonus.rawValue: "gift.fill",
+        IncomeCategory.lottery.rawValue: "ticket.fill",
+        IncomeCategory.freelance.rawValue: "briefcase.fill",
+        IncomeCategory.other.rawValue: "ellipsis.circle.fill",
+    ]
+    
+    static func icon(for category: String, type: TransactionType) -> String {
+        let map = type == .expense ? expenseIcons : incomeIcons
+        return map[category] ?? "ellipsis.circle.fill"
+    }
+}
+
 // MARK: - 交易記錄
-struct Transaction: Identifiable, Codable, Equatable {
+struct Transaction: Identifiable, Codable, Equatable, Hashable {
     
     enum CodingKeys: String, CodingKey {
         case id, type, category, amount, name, invoiceNumber, imageData, date, ledgerId
@@ -102,4 +130,8 @@ struct Transaction: Identifiable, Codable, Equatable {
     
     var categoryDisplayName: String { category }
     var amountDisplay: String { String(format: "%.0f", amount) }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @EnvironmentObject private var lotteryState: LotteryAppState
     @State private var selectedTab = 0
     
     var body: some View {
@@ -42,9 +43,23 @@ struct MainTabView: View {
                 }
                 .tag(4)
         }
+        .alert("恭喜中獎！", isPresented: Binding(
+            get: { lotteryState.pendingLotteryAlert != nil },
+            set: { if !$0 { lotteryState.pendingLotteryAlert = nil } }
+        )) {
+            Button("太棒了", role: .cancel) {
+                lotteryState.pendingLotteryAlert = nil
+            }
+        } message: {
+            if let summary = lotteryState.pendingLotteryAlert {
+                let msg = summary.byPeriod.map { "\($0.key)：\($0.value.count) 張，共 $\($0.value.amount)" }.joined(separator: "\n")
+                Text("\(msg)\n\n總計：\(summary.wins.count) 張，$\(summary.totalAmount)")
+            }
+        }
     }
 }
 
 #Preview {
     MainTabView()
+        .environmentObject(LotteryAppState.shared)
 }

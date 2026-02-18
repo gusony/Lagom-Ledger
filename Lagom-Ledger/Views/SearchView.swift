@@ -85,9 +85,20 @@ struct SearchView: View {
                     } else {
                         List {
                             ForEach(searchResults) { transaction in
-                                TransactionRowView(transaction: transaction)
+                                NavigationLink {
+                                    TransactionDetailView(transaction: transaction)
+                                } label: {
+                                    TransactionRowView(transaction: transaction)
+                                        .padding(.vertical, 4)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        store.delete(transaction)
+                                    } label: {
+                                        Label("刪除", systemImage: "trash")
+                                    }
+                                }
                             }
-                            .onDelete(perform: deleteFromResults)
                         }
                         .listStyle(.insetGrouped)
                         .scrollDismissesKeyboard(.immediately)
@@ -114,13 +125,6 @@ struct SearchView: View {
     
     private func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-    
-    private func deleteFromResults(at offsets: IndexSet) {
-        for index in offsets {
-            let transaction = searchResults[index]
-            store.delete(transaction)
-        }
     }
 }
 

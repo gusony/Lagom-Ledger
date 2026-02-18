@@ -2,10 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.lagom.ledger.lottery</string>
+	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>用於拍攝收據、消費憑證，以及掃描電子發票 QR Code</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>用於選擇收據或消費憑證照片</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 </dict>
 </plist>
 

@@ -26,6 +26,9 @@
 		A1000032272F000600000001 /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000033272F000600000001 /* Ledger.swift */; };
 		A1000034272F000600000002 /* LedgerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000035272F000600000002 /* LedgerStore.swift */; };
 		A1000036272F000600000003 /* LedgerManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000037272F000600000003 /* LedgerManagementView.swift */; };
+		A1000038272F000700000001 /* LotteryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000039272F000700000001 /* LotteryService.swift */; };
+		A100003A272F000700000002 /* LotteryChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100003B272F000700000002 /* LotteryChecker.swift */; };
+		A100003C272F000800000001 /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100003D272F000800000001 /* TransactionDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +52,9 @@
 		A1000033272F000600000001 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
 		A1000035272F000600000002 /* LedgerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerStore.swift; sourceTree = "<group>"; };
 		A1000037272F000600000003 /* LedgerManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerManagementView.swift; sourceTree = "<group>"; };
+		A1000039272F000700000001 /* LotteryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LotteryService.swift; sourceTree = "<group>"; };
+		A100003B272F000700000002 /* LotteryChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LotteryChecker.swift; sourceTree = "<group>"; };
+		A100003D272F000800000001 /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +114,8 @@
 				A100002D272F000400000001 /* CSVService.swift */,
 				A100002F272F000500000001 /* InvoiceQRParser.swift */,
 				A1000035272F000600000002 /* LedgerStore.swift */,
+				A1000039272F000700000001 /* LotteryService.swift */,
+				A100003B272F000700000002 /* LotteryChecker.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -118,6 +126,7 @@
 				A100001A272F000200000003 /* MainTabView.swift */,
 				A100001C272F000200000004 /* HomeView.swift */,
 				A100001E272F000200000005 /* TransactionRowView.swift */,
+				A100003D272F000800000001 /* TransactionDetailView.swift */,
 				A1000020272F000200000006 /* AddTransactionView.swift */,
 				A1000022272F000200000007 /* ReportView.swift */,
 				A1000024272F000200000008 /* SearchView.swift */,
@@ -216,6 +225,9 @@
 				A1000032272F000600000001 /* Ledger.swift in Sources */,
 				A1000034272F000600000002 /* LedgerStore.swift in Sources */,
 				A1000036272F000600000003 /* LedgerManagementView.swift in Sources */,
+				A1000038272F000700000001 /* LotteryService.swift in Sources */,
+				A100003A272F000700000002 /* LotteryChecker.swift in Sources */,
+				A100003C272F000800000001 /* TransactionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +369,7 @@
 				DEVELOPMENT_TEAM = HNTTEZ3MAD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lagom-Ledger/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lagom Ledger";
 				INFOPLIST_KEY_NSCameraUsageDescription = "用於拍攝收據或消費憑證";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用於選擇收據或消費憑證照片";
@@ -389,6 +402,7 @@
 				DEVELOPMENT_TEAM = HNTTEZ3MAD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Lagom-Ledger/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lagom Ledger";
 				INFOPLIST_KEY_NSCameraUsageDescription = "用於拍攝收據或消費憑證";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "用於選擇收據或消費憑證照片";
