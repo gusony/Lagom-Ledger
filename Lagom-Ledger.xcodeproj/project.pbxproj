@@ -65,6 +65,22 @@
 			path = Accounting;
 			sourceTree = "<group>";
 		};
+		A1000006272F000100000006 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000272F000100000000 /* Accounting.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1000007272F000100000007 = {
+			isa = PBXGroup;
+			children = (
+				A1000005272F000100000005 /* Accounting */,
+				A1000006272F000100000006 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
 		A1000027272F00020000000A /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -95,22 +111,6 @@
 				A1000026272F000200000009 /* SettingsView.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		A1000006272F000100000006 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A1000000272F000100000000 /* Accounting.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		A1000007272F000100000007 = {
-			isa = PBXGroup;
-			children = (
-				A1000005272F000100000005 /* Accounting */,
-				A1000006272F000100000006 /* Products */,
-			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -334,6 +334,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = HNTTEZ3MAD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lagom Ledger";
@@ -365,6 +366,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = HNTTEZ3MAD;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lagom Ledger";

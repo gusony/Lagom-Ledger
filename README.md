@@ -18,9 +18,10 @@
 
 1. 用 **Xcode** 開啟專案：
    ```bash
-   open /Users/linjunhan/git/Accounting/Accounting.xcodeproj
+   open Lagom-Ledger.xcodeproj
    ```
-2. 或雙擊 `Accounting.xcodeproj` 開啟
+   （在專案目錄下執行）
+2. 或雙擊 `Lagom-Ledger.xcodeproj` 開啟
 
 ### 2. 在模擬器上測試
 
@@ -38,8 +39,8 @@
 
 #### 3.2 設定開發者帳號
 
-1. 在 Xcode 左側點選藍色專案圖示 **Accounting**
-2. 選擇 **Accounting** target
+1. 在 Xcode 左側點選藍色專案圖示 **Lagom Ledger**
+2. 選擇 **Lagom Ledger** target
 3. 點選 **Signing & Capabilities**
 4. 勾選 **Automatically manage signing**
 5. 在 **Team** 選擇你的 Apple ID（若沒有，點 **Add Account** 登入）
@@ -70,14 +71,14 @@
 ## 專案結構
 
 ```
-Accounting/
-├── Accounting.xcodeproj    # Xcode 專案檔
-├── Accounting/             # 原始碼
-│   ├── AccountingApp.swift # App 進入點
-│   ├── ContentView.swift   # 主畫面
-│   └── Assets.xcassets    # 圖片與資源
+Lagom-Ledger/
+├── Lagom-Ledger.xcodeproj    # Xcode 專案檔
+├── Lagom-Ledger/             # 原始碼
+│   ├── AccountingApp.swift   # App 進入點
+│   ├── ContentView.swift     # 主畫面
+│   └── Assets.xcassets      # 圖片與資源
 ├── README.md
-└── DEVELOPMENT_PLAN.md    # 開發計畫
+└── DEVELOPMENT_PLAN.md      # 開發計畫
 ```
 
 ---
