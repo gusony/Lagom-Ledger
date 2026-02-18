@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @StateObject private var store = TransactionStore.shared
+    @StateObject private var ledgerStore = LedgerStore.shared
     @State private var nameText: String = ""
     @State private var startDate: Date?
     @State private var endDate: Date?
@@ -17,7 +18,7 @@ struct SearchView: View {
     @FocusState private var isNameFocused: Bool
     
     private var searchResults: [Transaction] {
-        store.search(startDate: useDateRange ? startDate : nil, endDate: useDateRange ? endDate : nil, name: nameText)
+        store.search(startDate: useDateRange ? startDate : nil, endDate: useDateRange ? endDate : nil, name: nameText, ledgerId: ledgerStore.selectedLedgerId)
     }
     
     private var hasSearchInput: Bool {

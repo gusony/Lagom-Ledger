@@ -15,21 +15,24 @@ enum TimePeriod: String, CaseIterable {
 
 struct HomeView: View {
     @StateObject private var store = TransactionStore.shared
+    @StateObject private var ledgerStore = LedgerStore.shared
     @State private var selectedPeriod: TimePeriod = .month
     @State private var selectedDate = Date()
     
     private var filteredTransactions: [Transaction] {
         let calendar = Calendar.current
+        let ledgerId = ledgerStore.selectedLedgerId
         switch selectedPeriod {
         case .year:
-            return store.transactions(for: calendar.component(.year, from: selectedDate))
+            return store.transactions(for: calendar.component(.year, from: selectedDate), ledgerId: ledgerId)
         case .month:
             return store.transactions(
                 for: calendar.component(.year, from: selectedDate),
-                month: calendar.component(.month, from: selectedDate)
+                month: calendar.component(.month, from: selectedDate),
+                ledgerId: ledgerId
             )
         case .day:
-            return store.transactions(for: selectedDate)
+            return store.transactions(for: selectedDate, ledgerId: ledgerId)
         }
     }
     
@@ -119,8 +122,28 @@ struct HomeView: View {
                     }
                 }
             }
-            .navigationTitle("Lagom Ledger")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Menu {
+                        Button("全部") {
+                            ledgerStore.selectLedger(nil)
+                        }
+                        ForEach(ledgerStore.ledgers) { ledger in
+                            Button(ledger.name) {
+                                ledgerStore.selectLedger(ledger.id)
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text(ledgerStore.isShowingAll ? "全部" : (ledgerStore.selectedLedger?.name ?? "Lagom Ledger"))
+                                .font(.headline)
+                            Image(systemName: "chevron.down")
+                                .font(.caption)
+                        }
+                    }
+                }
+            }
         }
     }
     

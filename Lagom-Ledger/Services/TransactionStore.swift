@@ -29,12 +29,13 @@ class TransactionStore: ObservableObject {
     private func addSampleData() {
         let calendar = Calendar.current
         let now = Date()
+        let defaultLedgerId = LedgerStore.shared.ledgers.first?.id
         
         let samples: [Transaction] = [
-            Transaction(type: .expense, category: ExpenseCategory.food.rawValue, amount: 120, name: "午餐", date: now),
-            Transaction(type: .expense, category: ExpenseCategory.transport.rawValue, amount: 50, name: "捷運", date: calendar.date(byAdding: .day, value: -1, to: now)!),
-            Transaction(type: .income, category: IncomeCategory.salary.rawValue, amount: 50000, name: "月薪", date: calendar.date(byAdding: .day, value: -5, to: now)!),
-            Transaction(type: .expense, category: ExpenseCategory.shopping.rawValue, amount: 350, name: "日用品", date: calendar.date(byAdding: .day, value: -3, to: now)!),
+            Transaction(type: .expense, category: ExpenseCategory.food.rawValue, amount: 120, name: "午餐", date: now, ledgerId: defaultLedgerId),
+            Transaction(type: .expense, category: ExpenseCategory.transport.rawValue, amount: 50, name: "捷運", date: calendar.date(byAdding: .day, value: -1, to: now)!, ledgerId: defaultLedgerId),
+            Transaction(type: .income, category: IncomeCategory.salary.rawValue, amount: 50000, name: "月薪", date: calendar.date(byAdding: .day, value: -5, to: now)!, ledgerId: defaultLedgerId),
+            Transaction(type: .expense, category: ExpenseCategory.shopping.rawValue, amount: 350, name: "日用品", date: calendar.date(byAdding: .day, value: -3, to: now)!, ledgerId: defaultLedgerId),
         ]
         
         for t in samples {
@@ -51,9 +52,16 @@ class TransactionStore: ObservableObject {
         }
         do {
             let data = try Data(contentsOf: fileURL)
-            let decoded = try JSONDecoder().decode([Transaction].self, from: data)
+            var decoded = try JSONDecoder().decode([Transaction].self, from: data)
+            // 舊資料遷移：無 ledgerId 的歸入預設記帳本
+            if let defaultLedgerId = LedgerStore.shared.ledgers.first?.id {
+                for i in decoded.indices where decoded[i].ledgerId == nil {
+                    decoded[i].ledgerId = defaultLedgerId
+                }
+            }
             transactions = decoded.sorted { $0.date > $1.date }
             applyRetentionLimit()
+            save()
         } catch {
             print("載入失敗: \(error)")
             transactions = []
@@ -110,27 +118,32 @@ class TransactionStore: ObservableObject {
         }
     }
     
-    // MARK: - 篩選
+    // MARK: - 篩選（ledgerId: nil = 全部）
     
-    func transactions(for year: Int) -> [Transaction] {
-        transactions.filter { Calendar.current.component(.year, from: $0.date) == year }
+    private func filtered(by ledgerId: UUID?) -> [Transaction] {
+        guard let id = ledgerId else { return transactions }
+        return transactions.filter { $0.ledgerId == id }
     }
     
-    func transactions(for year: Int, month: Int) -> [Transaction] {
-        transactions.filter {
+    func transactions(for year: Int, ledgerId: UUID? = nil) -> [Transaction] {
+        filtered(by: ledgerId).filter { Calendar.current.component(.year, from: $0.date) == year }
+    }
+    
+    func transactions(for year: Int, month: Int, ledgerId: UUID? = nil) -> [Transaction] {
+        filtered(by: ledgerId).filter {
             Calendar.current.component(.year, from: $0.date) == year &&
             Calendar.current.component(.month, from: $0.date) == month
         }
     }
     
-    func transactions(for date: Date) -> [Transaction] {
-        transactions.filter { Calendar.current.isDate($0.date, inSameDayAs: date) }
+    func transactions(for date: Date, ledgerId: UUID? = nil) -> [Transaction] {
+        filtered(by: ledgerId).filter { Calendar.current.isDate($0.date, inSameDayAs: date) }
     }
     
     // MARK: - 搜尋
     
-    func search(startDate: Date?, endDate: Date?, name: String) -> [Transaction] {
-        var result = transactions
+    func search(startDate: Date?, endDate: Date?, name: String, ledgerId: UUID? = nil) -> [Transaction] {
+        var result = filtered(by: ledgerId)
         
         if let start = startDate {
             result = result.filter { $0.date >= Calendar.current.startOfDay(for: start) }
@@ -155,7 +168,7 @@ class TransactionStore: ObservableObject {
     // MARK: - 報表
     
     /// 每月支出總額（用於走勢圖）
-    func monthlyExpenseTotals(months: Int = 12) -> [(year: Int, month: Int, amount: Double)] {
+    func monthlyExpenseTotals(months: Int = 12, ledgerId: UUID? = nil) -> [(year: Int, month: Int, amount: Double)] {
         let calendar = Calendar.current
         let now = Date()
         var result: [(year: Int, month: Int, amount: Double)] = []
@@ -164,7 +177,7 @@ class TransactionStore: ObservableObject {
             guard let date = calendar.date(byAdding: .month, value: -i, to: now) else { continue }
             let year = calendar.component(.year, from: date)
             let month = calendar.component(.month, from: date)
-            let monthTransactions = transactions(for: year, month: month)
+            let monthTransactions = transactions(for: year, month: month, ledgerId: ledgerId)
             let total = monthTransactions
                 .filter { $0.type == .expense }
                 .reduce(0) { $0 + $1.amount }
@@ -174,8 +187,8 @@ class TransactionStore: ObservableObject {
     }
     
     /// 指定月份各類別支出比例
-    func expenseByCategory(year: Int, month: Int) -> [(category: String, amount: Double)] {
-        let monthTransactions = transactions(for: year, month: month)
+    func expenseByCategory(year: Int, month: Int, ledgerId: UUID? = nil) -> [(category: String, amount: Double)] {
+        let monthTransactions = transactions(for: year, month: month, ledgerId: ledgerId)
             .filter { $0.type == .expense }
         
         var dict: [String: Double] = [:]
@@ -190,6 +203,17 @@ class TransactionStore: ObservableObject {
     func clearAll() {
         transactions = []
         save()
+    }
+    
+    /// 刪除指定記帳本的所有交易
+    func deleteTransactions(ledgerId: UUID) {
+        transactions.removeAll { $0.ledgerId == ledgerId }
+        save()
+    }
+    
+    /// 取得指定記帳本的所有交易（供匯出）
+    func transactions(ledgerId: UUID) -> [Transaction] {
+        transactions.filter { $0.ledgerId == ledgerId }
     }
     
     /// 套用資料保留限制，刪除超過 N 個月的舊資料

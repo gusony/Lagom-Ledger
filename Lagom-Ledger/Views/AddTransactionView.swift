@@ -10,12 +10,14 @@ import SwiftUI
 struct AddTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var store = TransactionStore.shared
+    @StateObject private var ledgerStore = LedgerStore.shared
     
     let type: TransactionType
     var isEmbeddedInTab: Bool = false
     
     @State private var selectedType: TransactionType
     @State private var selectedCategory: String = ""
+    @State private var selectedLedgerId: UUID?
     @State private var amountText: String = ""
     @State private var nameText: String = ""
     @State private var invoiceNumberText: String = ""
@@ -42,7 +44,7 @@ struct AddTransactionView: View {
     }
     
     private var isValid: Bool {
-        !selectedCategory.isEmpty && (Double(amountText) ?? 0) > 0
+        selectedLedgerId != nil && !selectedCategory.isEmpty && (Double(amountText) ?? 0) > 0
     }
     
     var body: some View {
@@ -54,6 +56,16 @@ struct AddTransactionView: View {
                         Text("收入").tag(TransactionType.income)
                     }
                     .pickerStyle(.segmented)
+                }
+                
+                Section("記帳本（必選）") {
+                    Picker("記帳本", selection: $selectedLedgerId) {
+                        Text("請選擇").tag(nil as UUID?)
+                        ForEach(ledgerStore.ledgers) { ledger in
+                            Text(ledger.name).tag(ledger.id as UUID?)
+                        }
+                    }
+                    .pickerStyle(.menu)
                 }
                 
                 Section("類別（必選）") {
@@ -171,6 +183,10 @@ struct AddTransactionView: View {
             if selectedCategory.isEmpty {
                 selectedCategory = categories.first ?? ""
             }
+            // 若選了特定記帳本則帶入，若為全部則留空
+            if selectedLedgerId == nil && !ledgerStore.isShowingAll, let id = ledgerStore.selectedLedgerId {
+                selectedLedgerId = id
+            }
         }
         .onChange(of: selectedType) { _ in
             selectedCategory = categories.first ?? ""
@@ -191,6 +207,12 @@ struct AddTransactionView: View {
         
         let imageData = selectedImage?.jpegData(compressionQuality: 0.7)
         
+        guard let ledgerId = selectedLedgerId else {
+            errorMessage = "請選擇記帳本"
+            showError = true
+            return
+        }
+        
         let transaction = Transaction(
             type: selectedType,
             category: selectedCategory,
@@ -198,7 +220,8 @@ struct AddTransactionView: View {
             name: nameText.isEmpty ? nil : nameText,
             invoiceNumber: invoiceNumberText.isEmpty ? nil : invoiceNumberText,
             imageData: imageData,
-            date: selectedDate
+            date: selectedDate,
+            ledgerId: ledgerId
         )
         
         store.add(transaction)
@@ -216,6 +239,8 @@ struct AddTransactionView: View {
         selectedDate = Date()
         selectedImage = nil
         selectedCategory = categories.first ?? ""
+        // 若選了特定記帳本則帶入，若為全部則清空
+        selectedLedgerId = ledgerStore.isShowingAll ? nil : ledgerStore.selectedLedgerId
     }
 }
 

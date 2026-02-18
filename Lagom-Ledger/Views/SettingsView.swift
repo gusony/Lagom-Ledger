@@ -23,6 +23,19 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                // 記帳本管理
+                Section {
+                    NavigationLink {
+                        LedgerManagementView()
+                    } label: {
+                        Label("記帳本", systemImage: "book.closed")
+                    }
+                } header: {
+                    Text("記帳本")
+                } footer: {
+                    Text("新增、刪除記帳本。刪除會一併刪除該記帳本內的所有交易。")
+                }
+                
                 // 資料匯出/匯入
                 Section {
                     Button {
@@ -146,7 +159,11 @@ struct SettingsView: View {
                         do {
                             let data = try Data(contentsOf: url)
                             let content = String(data: data, encoding: .utf8) ?? ""
-                            let imported = CSVService.parseCSV(content)
+                            var imported = CSVService.parseCSV(content)
+                            let defaultLedgerId = LedgerStore.shared.ledgers.first?.id
+                            for i in imported.indices {
+                                imported[i].ledgerId = imported[i].ledgerId ?? defaultLedgerId
+                            }
                             transactionStore.importFromCSV(imported)
                             backupMessage = "已匯入 \(imported.count) 筆資料。"
                         } catch {

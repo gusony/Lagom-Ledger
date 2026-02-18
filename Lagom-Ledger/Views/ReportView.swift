@@ -10,18 +10,19 @@ import Charts
 
 struct ReportView: View {
     @StateObject private var store = TransactionStore.shared
+    @StateObject private var ledgerStore = LedgerStore.shared
     @State private var selectedYear: Int = Calendar.current.component(.year, from: Date())
     @State private var selectedMonth: Int = Calendar.current.component(.month, from: Date())
     
     private var monthlyData: [(label: String, amount: Double)] {
-        store.monthlyExpenseTotals(months: 12).map { item in
+        store.monthlyExpenseTotals(months: 12, ledgerId: ledgerStore.selectedLedgerId).map { item in
             let label = "\(item.month)/\(item.year % 100)"
             return (label, item.amount)
         }
     }
     
     private var categoryData: [(category: String, amount: Double)] {
-        store.expenseByCategory(year: selectedYear, month: selectedMonth)
+        store.expenseByCategory(year: selectedYear, month: selectedMonth, ledgerId: ledgerStore.selectedLedgerId)
     }
     
     var body: some View {

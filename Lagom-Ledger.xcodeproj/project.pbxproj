@@ -23,6 +23,9 @@
 		A100002C272F000400000001 /* CSVService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002D272F000400000001 /* CSVService.swift */; };
 		A100002E272F000500000001 /* InvoiceQRParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002F272F000500000001 /* InvoiceQRParser.swift */; };
 		A1000030272F000500000002 /* InvoiceQRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000031272F000500000002 /* InvoiceQRScannerView.swift */; };
+		A1000032272F000600000001 /* Ledger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000033272F000600000001 /* Ledger.swift */; };
+		A1000034272F000600000002 /* LedgerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000035272F000600000002 /* LedgerStore.swift */; };
+		A1000036272F000600000003 /* LedgerManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000037272F000600000003 /* LedgerManagementView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +46,9 @@
 		A100002D272F000400000001 /* CSVService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVService.swift; sourceTree = "<group>"; };
 		A100002F272F000500000001 /* InvoiceQRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceQRParser.swift; sourceTree = "<group>"; };
 		A1000031272F000500000002 /* InvoiceQRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceQRScannerView.swift; sourceTree = "<group>"; };
+		A1000033272F000600000001 /* Ledger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger.swift; sourceTree = "<group>"; };
+		A1000035272F000600000002 /* LedgerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerStore.swift; sourceTree = "<group>"; };
+		A1000037272F000600000003 /* LedgerManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LedgerManagementView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				A1000016272F000200000001 /* Transaction.swift */,
+				A1000033272F000600000001 /* Ledger.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -100,6 +107,7 @@
 				A100002B272F000300000001 /* SettingsStore.swift */,
 				A100002D272F000400000001 /* CSVService.swift */,
 				A100002F272F000500000001 /* InvoiceQRParser.swift */,
+				A1000035272F000600000002 /* LedgerStore.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -115,6 +123,7 @@
 				A1000024272F000200000008 /* SearchView.swift */,
 				A1000026272F000200000009 /* SettingsView.swift */,
 				A1000031272F000500000002 /* InvoiceQRScannerView.swift */,
+				A1000037272F000600000003 /* LedgerManagementView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -204,6 +213,9 @@
 				A100002C272F000400000001 /* CSVService.swift in Sources */,
 				A100002E272F000500000001 /* InvoiceQRParser.swift in Sources */,
 				A1000030272F000500000002 /* InvoiceQRScannerView.swift in Sources */,
+				A1000032272F000600000001 /* Ledger.swift in Sources */,
+				A1000034272F000600000002 /* LedgerStore.swift in Sources */,
+				A1000036272F000600000003 /* LedgerManagementView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

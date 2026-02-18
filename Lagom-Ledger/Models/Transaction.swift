@@ -40,7 +40,7 @@ enum IncomeCategory: String, Codable, CaseIterable {
 struct Transaction: Identifiable, Codable, Equatable {
     
     enum CodingKeys: String, CodingKey {
-        case id, type, category, amount, name, invoiceNumber, imageData, date
+        case id, type, category, amount, name, invoiceNumber, imageData, date, ledgerId
     }
     
     init(from decoder: Decoder) throws {
@@ -53,6 +53,7 @@ struct Transaction: Identifiable, Codable, Equatable {
         invoiceNumber = try c.decodeIfPresent(String.self, forKey: .invoiceNumber)
         imageData = try c.decodeIfPresent(Data.self, forKey: .imageData)
         date = try c.decode(Date.self, forKey: .date)
+        ledgerId = try c.decodeIfPresent(UUID.self, forKey: .ledgerId)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -65,6 +66,7 @@ struct Transaction: Identifiable, Codable, Equatable {
         try c.encodeIfPresent(invoiceNumber, forKey: .invoiceNumber)
         try c.encodeIfPresent(imageData, forKey: .imageData)
         try c.encode(date, forKey: .date)
+        try c.encodeIfPresent(ledgerId, forKey: .ledgerId)
     }
     var id: UUID
     var type: TransactionType
@@ -74,6 +76,7 @@ struct Transaction: Identifiable, Codable, Equatable {
     var invoiceNumber: String?  // 電子發票字軌號碼（選填）
     var imageData: Data?
     var date: Date
+    var ledgerId: UUID?  // 所屬記帳本
     
     init(
         id: UUID = UUID(),
@@ -83,7 +86,8 @@ struct Transaction: Identifiable, Codable, Equatable {
         name: String? = nil,
         invoiceNumber: String? = nil,
         imageData: Data? = nil,
-        date: Date = Date()
+        date: Date = Date(),
+        ledgerId: UUID? = nil
     ) {
         self.id = id
         self.type = type
@@ -93,6 +97,7 @@ struct Transaction: Identifiable, Codable, Equatable {
         self.invoiceNumber = invoiceNumber
         self.imageData = imageData
         self.date = date
+        self.ledgerId = ledgerId
     }
     
     var categoryDisplayName: String { category }
