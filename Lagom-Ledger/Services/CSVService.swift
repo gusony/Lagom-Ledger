@@ -18,11 +18,12 @@ struct CSVService {
     
     static func exportCSV(transactions: [Transaction]) -> String {
         let bom = "\u{FEFF}"
-        var csv = bom + "類型,類別,金額,名稱,日期\n"
+        var csv = bom + "類型,類別,金額,名稱,發票號碼,日期\n"
         for t in transactions {
             let name = (t.name ?? "").replacingOccurrences(of: ",", with: "，")
+            let invoice = (t.invoiceNumber ?? "").replacingOccurrences(of: ",", with: "，")
             let dateStr = dateFormatter.string(from: t.date)
-            csv += "\(t.type.rawValue),\(t.category),\(Int(t.amount)),\"\(name)\",\(dateStr)\n"
+            csv += "\(t.type.rawValue),\(t.category),\(Int(t.amount)),\"\(name)\",\"\(invoice)\",\(dateStr)\n"
         }
         return csv
     }
@@ -43,15 +44,17 @@ struct CSVService {
             let category = parsed[1]
             guard let amount = Double(parsed[2]) else { continue }
             let name = parsed.count > 3 ? parsed[3].isEmpty ? nil : parsed[3] : nil
-            let date: Date
-            if parsed.count > 4, let d = dateFormatter.date(from: parsed[4]) {
+            var invoiceNumber: String? = nil
+            var date = Date()
+            if parsed.count >= 6 {
+                invoiceNumber = parsed[4].isEmpty ? nil : parsed[4]
+                if let d = dateFormatter.date(from: parsed[5]) { date = d }
+            } else if parsed.count >= 5, let d = dateFormatter.date(from: parsed[4]) {
                 date = d
-            } else {
-                date = Date()
             }
             
             let type: TransactionType = (typeStr == "收入") ? .income : .expense
-            results.append(Transaction(type: type, category: category, amount: amount, name: name, date: date))
+            results.append(Transaction(type: type, category: category, amount: amount, name: name, invoiceNumber: invoiceNumber, date: date))
         }
         return results.sorted { $0.date > $1.date }
     }

@@ -144,7 +144,8 @@ class TransactionStore: ObservableObject {
         if !query.isEmpty {
             result = result.filter {
                 ($0.name?.lowercased().contains(query) ?? false) ||
-                $0.category.lowercased().contains(query)
+                $0.category.lowercased().contains(query) ||
+                ($0.invoiceNumber?.lowercased().contains(query) ?? false)
             }
         }
         

@@ -18,10 +18,12 @@ struct AddTransactionView: View {
     @State private var selectedCategory: String = ""
     @State private var amountText: String = ""
     @State private var nameText: String = ""
+    @State private var invoiceNumberText: String = ""
     @State private var selectedDate = Date()
     @State private var selectedImage: UIImage?
     @State private var showImagePicker = false
     @State private var showCamera = false
+    @State private var showInvoiceScanner = false
     @State private var imageSourceType: UIImagePickerController.SourceType = .photoLibrary
     
     @State private var showError = false
@@ -75,6 +77,19 @@ struct AddTransactionView: View {
                 
                 Section("名稱（選填）") {
                     TextField("消費或收入描述", text: $nameText)
+                }
+                
+                if selectedType == .expense {
+                    Section("發票號碼（選填）") {
+                        HStack {
+                            TextField("電子發票字軌號碼", text: $invoiceNumberText)
+                            Button {
+                                showInvoiceScanner = true
+                            } label: {
+                                Label("掃描", systemImage: "qrcode.viewfinder")
+                            }
+                        }
+                    }
                 }
                 
                 Section("日期") {
@@ -139,6 +154,18 @@ struct AddTransactionView: View {
             .fullScreenCover(isPresented: $showCamera) {
                 ImagePicker(image: $selectedImage, sourceType: .camera)
             }
+            .sheet(isPresented: $showInvoiceScanner) {
+                InvoiceQRScannerView { result in
+                    invoiceNumberText = result.invoiceNumber
+                    amountText = String(Int(result.totalAmount))
+                    if let store = result.storeName {
+                        nameText = store
+                    }
+                    if let date = result.invoiceDate {
+                        selectedDate = date
+                    }
+                }
+            }
         }
         .onAppear {
             if selectedCategory.isEmpty {
@@ -169,6 +196,7 @@ struct AddTransactionView: View {
             category: selectedCategory,
             amount: amount,
             name: nameText.isEmpty ? nil : nameText,
+            invoiceNumber: invoiceNumberText.isEmpty ? nil : invoiceNumberText,
             imageData: imageData,
             date: selectedDate
         )
@@ -184,6 +212,7 @@ struct AddTransactionView: View {
     private func resetForm() {
         amountText = ""
         nameText = ""
+        invoiceNumberText = ""
         selectedDate = Date()
         selectedImage = nil
         selectedCategory = categories.first ?? ""

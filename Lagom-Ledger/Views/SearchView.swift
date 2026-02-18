@@ -47,7 +47,7 @@ struct SearchView: View {
                     .padding()
                     .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
                     
-                    TextField("名稱或類別", text: $nameText)
+                    TextField("名稱、類別或發票號碼", text: $nameText)
                         .padding()
                         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 10))
                         .focused($isNameFocused)
@@ -64,7 +64,7 @@ struct SearchView: View {
                             Image(systemName: "magnifyingglass")
                                 .font(.system(size: 80))
                                 .foregroundStyle(.secondary)
-                            Text("輸入名稱或設定日期範圍搜尋")
+                            Text("輸入名稱、類別、發票號碼或設定日期範圍搜尋")
                                 .font(.body)
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)

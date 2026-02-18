@@ -21,6 +21,8 @@
 		A1000025272F000200000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000026272F000200000009 /* SettingsView.swift */; };
 		A100002A272F000300000001 /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002B272F000300000001 /* SettingsStore.swift */; };
 		A100002C272F000400000001 /* CSVService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002D272F000400000001 /* CSVService.swift */; };
+		A100002E272F000500000001 /* InvoiceQRParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A100002F272F000500000001 /* InvoiceQRParser.swift */; };
+		A1000030272F000500000002 /* InvoiceQRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000031272F000500000002 /* InvoiceQRScannerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		A1000026272F000200000009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A100002B272F000300000001 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 		A100002D272F000400000001 /* CSVService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVService.swift; sourceTree = "<group>"; };
+		A100002F272F000500000001 /* InvoiceQRParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceQRParser.swift; sourceTree = "<group>"; };
+		A1000031272F000500000002 /* InvoiceQRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceQRScannerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +56,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A1000005272F000100000005 /* Accounting */ = {
+		A1000005272F000100000005 /* Lagom-Ledger */ = {
 			isa = PBXGroup;
 			children = (
 				A1000027272F00020000000A /* Models */,
@@ -62,7 +66,7 @@
 				A1000012272F000100000001 /* ContentView.swift */,
 				A1000013272F000100000001 /* Assets.xcassets */,
 			);
-			path = Accounting;
+			path = Lagom-Ledger;
 			sourceTree = "<group>";
 		};
 		A1000006272F000100000006 /* Products */ = {
@@ -95,6 +99,7 @@
 				A1000018272F000200000002 /* TransactionStore.swift */,
 				A100002B272F000300000001 /* SettingsStore.swift */,
 				A100002D272F000400000001 /* CSVService.swift */,
+				A100002F272F000500000001 /* InvoiceQRParser.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -109,6 +114,7 @@
 				A1000022272F000200000007 /* ReportView.swift */,
 				A1000024272F000200000008 /* SearchView.swift */,
 				A1000026272F000200000009 /* SettingsView.swift */,
+				A1000031272F000500000002 /* InvoiceQRScannerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -196,6 +202,8 @@
 				A1000025272F000200000009 /* SettingsView.swift in Sources */,
 				A100002A272F000300000001 /* SettingsStore.swift in Sources */,
 				A100002C272F000400000001 /* CSVService.swift in Sources */,
+				A100002E272F000500000001 /* InvoiceQRParser.swift in Sources */,
+				A1000030272F000500000002 /* InvoiceQRScannerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
